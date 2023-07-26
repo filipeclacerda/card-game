@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, StyleSheet, TouchableOpacity } from "react-native";
 import React, { useRef, useState } from "react";
 import Card from "./Card";
 
@@ -21,7 +21,7 @@ export default function Location({ cards, onCardPress, locationPosition, setLoca
 
   const handleLayout = () => {
     if (locationPosition.x !== 0) return;
-    locationRef.current.measure((x, y, width, height, pageX, pageY) => {
+    locationRef.current.measure((x: number, y: number, width: number, height: number, pageX: number, pageY: number) => {
       setLocationPosition({ x: pageX, y: pageY, width: width, height: height });
     });
   };

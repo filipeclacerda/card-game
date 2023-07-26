@@ -37,7 +37,7 @@ export default function CardItem({ card, onCardDropped, locationPosition }): any
       };
     });
 
-    const isCardInsideLocation = (cardX, cardY) => {
+    const isCardInsideLocation = (cardX: number, cardY: number) => {
       if (
         cardX > locationPosition.x &&
         cardX < locationPosition.x + locationPosition.width &&

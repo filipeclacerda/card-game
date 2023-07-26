@@ -8,10 +8,11 @@ interface HandProps {
     suit: string;
     onPress: () => void;
   }>;
-  onCardDropped: (card: object) => void;
+  onCardDropped: (card: object, isInsideLocation: boolean) => void;
+  locationPosition: { x: number; y: number };
 }
 
-export default function Hand({ cards, onCardDropped }: HandProps) {
+export default function Hand({ cards, onCardDropped, locationPosition }: HandProps) {
   if (!cards || !Array.isArray(cards)) {
     return null;
   }
@@ -19,7 +20,7 @@ export default function Hand({ cards, onCardDropped }: HandProps) {
   return (
     <View style={styles.container}>
       {cards.map((card, index) => (
-        <CardItem key={card.value} card={card} onCardDropped={onCardDropped} />
+        <CardItem key={card.value} card={card} onCardDropped={onCardDropped} locationPosition={locationPosition}/>
       ))}
     </View>
   );
@@ -30,6 +31,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "flex-end",
+    transition: "all 0.5s ease",
     height: "30%",
     position: "relative",
     marginBottom: 20,

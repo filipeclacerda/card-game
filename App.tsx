@@ -4,15 +4,16 @@ import React, { useState } from "react";
 import { StyleSheet } from "react-native";
 import Location from "./components/Location";
 
+interface Card {
+  value: string;
+  suit: string;
+  onPress: () => void;
+}
+
 export default function App() {
   const [cards, setCards] = useState([
     {
       value: "A",
-      suit: "♠",
-      onPress: () => console.log("A pressed"),
-    },
-    {
-      value: "1",
       suit: "♠",
       onPress: () => console.log("A pressed"),
     },
@@ -47,17 +48,23 @@ export default function App() {
       onPress: () => console.log("A pressed"),
     },
   ]);
-  const [local1Cards, setLocal1Cards] = useState([{value:"8", suit:"♠", onPress: () => console.log('a')}])
-  
-  const dropCardHandler = (card) => {
-    setLocal1Cards(local1Cards => [...local1Cards, card])
-    setCards(cards => cards.filter(c => c.value !== card.value))
+  const [local1Cards, setLocal1Cards] = useState([])
+  const [locationPosition, setLocationPosition] = useState({ x: 0, y: 0 });
+
+  const dropCardHandler = (card: Card, isInsideLocation: boolean) => {
+    if (isInsideLocation) {
+      setLocal1Cards(local1Cards => [...local1Cards, card])
+      setCards(cards => cards.filter(c => c.value !== card.value))
+    }
+    else{
+      console.log('nao esta dentro')
+    }
   }
 
   return (
     <View style={styles.container}>
-      <Location cards={local1Cards} onCardPress={()=>console.log('pressed')} />
-      <Hand cards={cards} onCardDropped={dropCardHandler}/>
+      <Location cards={local1Cards} onCardPress={()=>console.log('pressed')} locationPosition={locationPosition} setLocationPosition={setLocationPosition}/>
+      <Hand cards={cards} onCardDropped={dropCardHandler} locationPosition={locationPosition}/>
     </View>
   );
 }

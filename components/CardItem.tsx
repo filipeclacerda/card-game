@@ -3,9 +3,11 @@ import Animated, { useAnimatedGestureHandler, useAnimatedStyle, useSharedValue, 
 import Card from "./Card";
 import { StyleSheet } from "react-native";
 
-export default function CardItem({ card, onCardDropped }): any {
+export default function CardItem({ card, onCardDropped, locationPosition }): any {
     const x = useSharedValue(0);
     const y = useSharedValue(0);
+    const endX = useSharedValue(0);
+    const endY = useSharedValue(0);
     const isDropped = useSharedValue(false);
   
     const gestureHandler = useAnimatedGestureHandler({
@@ -19,6 +21,9 @@ export default function CardItem({ card, onCardDropped }): any {
         y.value = ctx.startY + event.translationY;
       },
       onEnd: (_) => {
+        console.log(_);
+        endX.value = _.absoluteX;
+        endY.value = _.absoluteY;
         if (!isDropped.value) {
           x.value = withSpring(0);
           y.value = withSpring(0);
@@ -31,10 +36,22 @@ export default function CardItem({ card, onCardDropped }): any {
         transform: [{ translateX: x.value }, { translateY: y.value }],
       };
     });
-  
+
+    const isCardInsideLocation = (cardX, cardY) => {
+      if (
+        cardX > locationPosition.x &&
+        cardX < locationPosition.x + locationPosition.width &&
+        cardY > locationPosition.y &&
+        cardY < locationPosition.y + locationPosition.height
+      ) {
+        return true;
+      }
+      return false;
+    };
+
     const onDrop = () => {
+      onCardDropped(card, isCardInsideLocation(endX.value, endY.value));
       isDropped.value = true;
-      onCardDropped(card);
     };
   
     return (

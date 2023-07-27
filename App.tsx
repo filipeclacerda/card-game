@@ -1,7 +1,6 @@
-import { View } from "react-native";
-import Hand from "./components/Hand";
 import React, { useState } from "react";
-import { StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
+import Hand from "./components/Hand";
 import Location from "./components/Location";
 
 interface Card {
@@ -10,93 +9,86 @@ interface Card {
   onPress: () => void;
 }
 
-export default function App() {
-  const [cards, setCards] = useState([
-    {
-      value: "A",
-      suit: "♠",
-      onPress: () => console.log("A pressed"),
-    },
-    {
-      value: "2",
-      suit: "♠",
-      onPress: () => console.log("A pressed"),
-    },
-    {
-      value: "3",
-      suit: "♠",
-      onPress: () => console.log("A pressed"),
-    },
-    {
-      value: "4",
-      suit: "♠",
-      onPress: () => console.log("A pressed"),
-    },
-    {
-      value: "5",
-      suit: "♠",
-      onPress: () => console.log("A pressed"),
-    },
-    {
-      value: "6",
-      suit: "♠",
-      onPress: () => console.log("A pressed"),
-    },
-    {
-      value: "7",
-      suit: "♠",
-      onPress: () => console.log("A pressed"),
-    },
-  ]);
-  const [local1Cards, setLocal1Cards] = useState([]);
-  const [local2Cards, setLocal2Cards] = useState([]);
-  const [local3Cards, setLocal3Cards] = useState([]);
-  const [locationPosition, setLocationPosition] = useState({ x: 0, y: 0 });
+interface LocationCards {
+  id: number;
+  cards: Card[];
+}
 
-  const dropCardHandler = (card: Card, isInsideLocation: boolean) => {
-    if (isInsideLocation) {
-      setLocal1Cards((local1Cards) => [...local1Cards, card]);
-      setCards((cards) => cards.filter((c) => c.value !== card.value));
+const initialCards: Card[] = [
+  { value: "A", suit: "♠", onPress: () => console.log("A pressed") },
+  { value: "2", suit: "♠", onPress: () => console.log("2 pressed") },
+  { value: "3", suit: "♠", onPress: () => console.log("3 pressed") },
+  { value: "4", suit: "♠", onPress: () => console.log("4 pressed") },
+  { value: "5", suit: "♠", onPress: () => console.log("5 pressed") },
+  { value: "6", suit: "♠", onPress: () => console.log("6 pressed") },
+  { value: "7", suit: "♠", onPress: () => console.log("7 pressed") },
+];
+
+const createEmptyLocations = (count: number): LocationCards[] => {
+  const locations: LocationCards[] = [];
+  for (let i = 0; i < count; i++) {
+    locations.push({ id: i, cards: [] });
+  }
+  return locations;
+};
+
+export default function App() {
+  const [cards, setCards] = useState<Card[]>(initialCards);
+  const [locations, setLocations] = useState<LocationCards[]>(createEmptyLocations(3));
+  const initialPositions = [
+    { x: 0, y: 0 }, // Position for the first location
+    { x: 0, y: 0 }, // Position for the second location
+    { x: 0, y: 0 }, // Position for the third location
+  ];
+  const [locationPositions, setLocationPositions] = useState(initialPositions);
+
+  const dropCardHandler = (card: Card, locationCardIsIn: any) => {
+    if (locationCardIsIn !== null) {
+      setLocations((prevLocations) => {
+        const updatedLocations = prevLocations.map((location) => {
+          if (location.id === locationCardIsIn) {
+            return { ...location, cards: [...location.cards, card] };
+          }
+          return location;
+        });
+        return updatedLocations;
+      });
+
+      setCards((prevCards) => prevCards.filter((c) => c.value !== card.value));
     } else {
-      console.log("nao esta dentro");
+      console.log("Not inside any location.");
     }
+  };
+
+  const setLocationPositionAtIndex = (index: number, newPosition: { x: number, y: number }) => {
+    setLocationPositions((prevPositions) => {
+      const newPositions = [...prevPositions];
+      newPositions[index] = newPosition;
+      return newPositions;
+    });
   };
 
   return (
     <View style={styles.container}>
       <View style={styles.locations}>
-        <Location
-          cards={local1Cards}
-          onCardPress={() => console.log("pressed")}
-          locationPosition={locationPosition}
-          setLocationPosition={setLocationPosition}
-        />
-        <Location
-          cards={local2Cards}
-          onCardPress={() => console.log("pressed")}
-          locationPosition={locationPosition}
-          setLocationPosition={setLocationPosition}
-        />
-        <Location
-          cards={local3Cards}
-          onCardPress={() => console.log("pressed")}
-          locationPosition={locationPosition}
-          setLocationPosition={setLocationPosition}
-        />
+        {locations.map((location, index) => (
+          <Location
+            key={location.id}
+            locationId={location.id}
+            cards={location.cards}
+            onCardPress={() => console.log("pressed")}
+            locationPosition={locationPositions[index]}
+            setLocationPosition={(newPosition) => setLocationPositionAtIndex(index, newPosition)}
+          />
+        ))}
       </View>
-      <Hand
-        cards={cards}
-        onCardDropped={dropCardHandler}
-        locationPosition={locationPosition}
-      />
+      <Hand cards={cards} onCardDropped={dropCardHandler} locationPositions={locationPositions} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    display: "flex",
-    justifyContent: "space-between",
     flex: 1,
     paddingTop: 100,
     alignItems: "center",
@@ -107,7 +99,6 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   locations: {
-    display: "flex",
     flexDirection: "row",
     justifyContent: "center",
     gap: 16,

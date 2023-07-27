@@ -14,7 +14,7 @@ import { StyleSheet } from "react-native";
 export default function CardItem({
   card,
   onCardDropped,
-  locationPosition,
+  locationPositions,
 }): any {
   const x = useSharedValue(0);
   const y = useSharedValue(0);
@@ -49,20 +49,23 @@ export default function CardItem({
     };
   });
 
-  const isCardInsideLocation = (cardX: number, cardY: number) => {
-    if (
-      cardX > locationPosition.x &&
-      cardX < locationPosition.x + locationPosition.width &&
-      cardY > locationPosition.y &&
-      cardY < locationPosition.y + locationPosition.height
-    ) {
-      return true;
-    }
-    return false;
+  const locationCardIsIn = (cardX: number, cardY: number) => {
+    let positionSelected = null;
+    locationPositions.forEach(( locationPosition: {x: number, y: number, width: number, height: number}, index: number) => {
+      if (
+        cardX > locationPosition.x &&
+        cardX < locationPosition.x + locationPosition.width &&
+        cardY > locationPosition.y &&
+        cardY < locationPosition.y + locationPosition.height
+      ) {
+        positionSelected = index
+      }
+    });
+    return positionSelected;
   };
 
   const onDrop = () => {
-    onCardDropped(card, isCardInsideLocation(endX.value, endY.value));
+    onCardDropped(card, locationCardIsIn(endX.value, endY.value));
     isDropped.value = true;
   };
 

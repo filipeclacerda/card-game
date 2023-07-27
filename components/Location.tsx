@@ -8,6 +8,7 @@ interface LocationProps {
     suit: string;
     onPress: () => void;
   }>;
+  locationId: number;
   onCardPress: (index: number) => void;
   locationPosition: { x: number; y: number };
   setLocationPosition: (position: {
@@ -22,6 +23,7 @@ export default function Location({
   cards,
   onCardPress,
   locationPosition,
+  locationId,
   setLocationPosition,
 }: LocationProps) {
   const [droppedCards, setDroppedCards] = useState<

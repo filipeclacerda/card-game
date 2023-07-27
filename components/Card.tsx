@@ -53,6 +53,7 @@ const styles: CardStyles = StyleSheet.create({
     borderColor: "#ccc",
     width: 100,
     height: 150,
+    cursor: "pointer",
   },
   containerPressed: {
     shadowColor: "#000",

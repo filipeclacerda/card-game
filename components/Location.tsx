@@ -10,27 +10,49 @@ interface LocationProps {
   }>;
   onCardPress: (index: number) => void;
   locationPosition: { x: number; y: number };
-  setLocationPosition: (position: { x: number; y: number, width: number, height: number }) => void;
+  setLocationPosition: (position: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  }) => void;
 }
 
-export default function Location({ cards, onCardPress, locationPosition, setLocationPosition }: LocationProps) {
-  const [droppedCards, setDroppedCards] = useState<Array<typeof cards[number]>>(
-    []
-  );
+export default function Location({
+  cards,
+  onCardPress,
+  locationPosition,
+  setLocationPosition,
+}: LocationProps) {
+  const [droppedCards, setDroppedCards] = useState<
+    Array<(typeof cards)[number]>
+  >([]);
   const locationRef = useRef(null);
 
   const handleLayout = () => {
     if (locationPosition.x !== 0) return;
-    locationRef.current.measure((x: number, y: number, width: number, height: number, pageX: number, pageY: number) => {
-      setLocationPosition({ x: pageX, y: pageY, width: width, height: height });
-    });
+    locationRef.current.measure(
+      (
+        x: number,
+        y: number,
+        width: number,
+        height: number,
+        pageX: number,
+        pageY: number
+      ) => {
+        setLocationPosition({
+          x: pageX,
+          y: pageY,
+          width: width,
+          height: height,
+        });
+      }
+    );
   };
 
-  const renderCard = (card: typeof cards[number], index: number) => {
+  const renderCard = (card: (typeof cards)[number], index: number) => {
     return (
-      <View
-        ref={locationRef}
-        onLayout={handleLayout} >
+      <View ref={locationRef} onLayout={handleLayout}>
         <TouchableOpacity
           key={index}
           onPress={() => onCardPress(index)}
@@ -62,7 +84,7 @@ const styles = StyleSheet.create({
     border: "1px solid #ccc",
     flexDirection: "row",
     justifyContent: "flex-start",
-    alignItems: "center",
+    alignItems: "flex-start",
     flexWrap: "wrap",
     gap: 20,
     width: "400px",
